@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CloudArrowUp, CheckCircle, WarningCircle } from '@phosphor-icons/react';
-import { uploadAndAnalyze } from '../services/imageService';
+import { uploadImage } from '../services/imageService';
 
 const STATES = {
   IDLE: 'IDLE',
@@ -27,9 +27,9 @@ export default function ImageUploader({ onSuccess }) {
     setStatus(STATES.UPLOADING);
     setErrorMsg('');
     try {
-      const response = await uploadAndAnalyze(file);
+      const analysisId = await uploadImage(file);
       setStatus(STATES.SUCCESS);
-      onSuccess(response.data);
+      onSuccess(analysisId);
     } catch (err) {
       setStatus(STATES.ERROR);
       const detail = err.response?.data?.detail;
@@ -99,7 +99,7 @@ export default function ImageUploader({ onSuccess }) {
               Arrastra una imagen aquí o haz clic para seleccionar
             </p>
             <p className="text-zinc-400 text-sm">
-              JPG, JPEG, PNG — máx 3MB
+              JPG, JPEG, PNG — máx 10MB
             </p>
           </motion.div>
         )}

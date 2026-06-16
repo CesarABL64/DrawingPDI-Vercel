@@ -10,7 +10,7 @@
       "routePrefix": "/_/backend",
       "builder": "@vercel/python",
       "entrypoint": "app/main.py",
-      "maxDuration": 10
+      "maxDuration": 30
     }
   },
   "rewrites": [

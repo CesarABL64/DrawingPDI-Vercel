@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
-import { FilePdf, TextAlignLeft } from '@phosphor-icons/react';
-import { getPdfUrl } from '../services/analysisService';
+import { getPdfUrl, getJsonUrl } from '../services/analysisService';
+import apiClient from '../services/api';
+import { DownloadSimple, FilePdf, TextAlignLeft } from '@phosphor-icons/react';
 
 const SPECIFIC_COLORS = [
   { key: 'red_pct', label: 'Rojo', color: '#ef4444' },
@@ -9,6 +10,7 @@ const SPECIFIC_COLORS = [
   { key: 'green_pct', label: 'Verde', color: '#22c55e' },
   { key: 'blue_pct', label: 'Azul', color: '#3b82f6' },
   { key: 'violet_pct', label: 'Violeta', color: '#8b5cf6' },
+  { key: 'earth_pct', label: 'Tonos Tierra', color: '#a0522d' },
   { key: 'white_pct', label: 'Blanco', color: '#d1d5db' },
   { key: 'black_pct', label: 'Negro', color: '#374151' },
   { key: 'gray_pct', label: 'Gris', color: '#9ca3af' },
@@ -70,9 +72,10 @@ function interpretFragmentation(val) {
   return 'Trazo continuo';
 }
 
-export default function MetricsPanel({ result, colorDistribution, strokeMetrics, analysisId }) {
-  const downloadJson = () => {
-    const blob = new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' });
+export default function MetricsPanel({ colorDistribution, strokeMetrics, enrichedFeatures, analysisId }) {
+  const downloadJson = async () => {
+    const res = await apiClient.get(getJsonUrl(analysisId));
+    const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -219,6 +222,80 @@ export default function MetricsPanel({ result, colorDistribution, strokeMetrics,
                   );
                 })}
               </div>
+            </div>
+          )}
+
+          {enrichedFeatures?.graphomotor_profile && (
+            <div className="px-5 py-4 border-t border-zinc-100">
+              <h4 className="text-xs font-medium tracking-widest uppercase text-zinc-400 mb-3">
+                Perfil Grafomotor
+              </h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="text-center">
+                  <div className="text-lg font-light text-zinc-900">
+                    {(enrichedFeatures.graphomotor_profile.edge_thickness_px ?? 0).toFixed(1)}
+                  </div>
+                  <div className="text-[10px] text-zinc-400">Grosor trazo (px)</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-light text-zinc-900">
+                    {((enrichedFeatures.graphomotor_profile.graphomotor_stability ?? 0) * 100).toFixed(0)}%
+                  </div>
+                  <div className="text-[10px] text-zinc-400">Estabilidad</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {enrichedFeatures?.canvas_utilization && (
+            <div className="px-5 py-4 border-t border-zinc-100">
+              <h4 className="text-xs font-medium tracking-widest uppercase text-zinc-400 mb-3">
+                Utilización del Canvas
+              </h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="text-center">
+                  <div className="text-lg font-light text-zinc-900">
+                    {((enrichedFeatures.canvas_utilization.total_used_pct ?? 0) * 100).toFixed(1)}%
+                  </div>
+                  <div className="text-[10px] text-zinc-400">Ocupación</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-light text-zinc-900">
+                    {((enrichedFeatures.canvas_utilization.symmetry_index ?? 0) * 100).toFixed(0)}%
+                  </div>
+                  <div className="text-[10px] text-zinc-400">Simetría I-D</div>
+                </div>
+              </div>
+              {enrichedFeatures.canvas_utilization.expansion_flag && enrichedFeatures.canvas_utilization.expansion_flag !== 'normal' && (
+                <p className="text-xs text-zinc-500 mt-2 italic text-center">
+                  {enrichedFeatures.canvas_utilization.expansion_flag === 'expansion' ? 'Expansión significativa del canvas' : 'Uso reducido del canvas (micropsia)'}
+                </p>
+              )}
+            </div>
+          )}
+
+          {enrichedFeatures?.visual_complexity && enrichedFeatures.visual_complexity.image_entropy > 0 && (
+            <div className="px-5 py-4 border-t border-zinc-100">
+              <h4 className="text-xs font-medium tracking-widest uppercase text-zinc-400 mb-3">
+                Complejidad Visual
+              </h4>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="text-center">
+                  <div className="text-lg font-light text-zinc-900">
+                    {(enrichedFeatures.visual_complexity.image_entropy ?? 0).toFixed(2)}
+                  </div>
+                  <div className="text-[10px] text-zinc-400">Entropía</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-lg font-light text-zinc-900">
+                    {(enrichedFeatures.visual_complexity.fractal_dimension ?? 0).toFixed(2)}
+                  </div>
+                  <div className="text-[10px] text-zinc-400">Dim. Fractal</div>
+                </div>
+              </div>
+              <p className="text-xs text-zinc-500 mt-2 italic text-center">
+                Organización: {enrichedFeatures.visual_complexity.organization_level ?? '—'}
+              </p>
             </div>
           )}
         </motion.div>

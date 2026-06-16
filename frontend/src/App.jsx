@@ -3,18 +3,18 @@ import HomePage from './pages/HomePage';
 import AnalysisPage from './pages/AnalysisPage';
 
 function App() {
-  const [analysisResult, setAnalysisResult] = useState(null);
+  const [analysisId, setAnalysisId] = useState(null);
 
-  if (analysisResult) {
+  if (analysisId) {
     return (
       <AnalysisPage
-        result={analysisResult}
-        onReset={() => setAnalysisResult(null)}
+        analysisId={analysisId}
+        onReset={() => setAnalysisId(null)}
       />
     );
   }
 
-  return <HomePage onAnalysisStart={setAnalysisResult} />;
+  return <HomePage onAnalysisStart={setAnalysisId} />;
 }
 
 export default App;
