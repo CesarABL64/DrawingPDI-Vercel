@@ -168,6 +168,8 @@ async def analyze_upload(file: UploadFile = File(...)):
         ),
     )
 
+    session.update_session(analysis_id, result)
+
     return {
         "data": result.model_dump(),
         "meta": {"elapsed_seconds": round(elapsed, 2)},

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { TextAlignLeft } from '@phosphor-icons/react';
+import { FilePdf, TextAlignLeft } from '@phosphor-icons/react';
+import { getPdfUrl } from '../services/analysisService';
 
 const SPECIFIC_COLORS = [
   { key: 'red_pct', label: 'Rojo', color: '#ef4444' },
@@ -225,6 +226,17 @@ export default function MetricsPanel({ result, colorDistribution, strokeMetrics,
 
       {analysisId && (
         <motion.div variants={itemVariants} className="flex gap-3">
+          <motion.a
+            href={getPdfUrl(analysisId)}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-primary flex-1"
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.97 }}
+          >
+            <FilePdf size={18} weight="duotone" />
+            Reporte PDF
+          </motion.a>
           <motion.button
             onClick={downloadJson}
             className="btn-ghost flex-1"
