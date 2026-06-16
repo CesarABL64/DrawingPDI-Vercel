@@ -9,7 +9,12 @@
       "root": "backend",
       "routePrefix": "/_/backend",
       "builder": "@vercel/python",
-      "entrypoint": "app/main.py"
+      "entrypoint": "app/main.py",
+      "maxDuration": 10
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/_/backend/api/:path*" },
+    { "source": "/health", "destination": "/_/backend/health" }
+  ]
 }

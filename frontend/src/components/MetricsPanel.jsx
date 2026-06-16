@@ -1,7 +1,5 @@
 import { motion } from 'framer-motion';
-import { getPdfUrl, getJsonUrl } from '../services/analysisService';
-import apiClient from '../services/api';
-import { DownloadSimple, FilePdf, TextAlignLeft } from '@phosphor-icons/react';
+import { TextAlignLeft } from '@phosphor-icons/react';
 
 const SPECIFIC_COLORS = [
   { key: 'red_pct', label: 'Rojo', color: '#ef4444' },
@@ -71,10 +69,9 @@ function interpretFragmentation(val) {
   return 'Trazo continuo';
 }
 
-export default function MetricsPanel({ colorDistribution, strokeMetrics, analysisId }) {
-  const downloadJson = async () => {
-    const res = await apiClient.get(getJsonUrl(analysisId));
-    const blob = new Blob([JSON.stringify(res.data, null, 2)], { type: 'application/json' });
+export default function MetricsPanel({ result, colorDistribution, strokeMetrics, analysisId }) {
+  const downloadJson = () => {
+    const blob = new Blob([JSON.stringify(result, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -228,17 +225,6 @@ export default function MetricsPanel({ colorDistribution, strokeMetrics, analysi
 
       {analysisId && (
         <motion.div variants={itemVariants} className="flex gap-3">
-          <motion.a
-            href={getPdfUrl(analysisId)}
-            target="_blank"
-            rel="noreferrer"
-            className="btn-primary flex-1"
-            whileHover={{ y: -1 }}
-            whileTap={{ scale: 0.97 }}
-          >
-            <FilePdf size={18} weight="duotone" />
-            Reporte PDF
-          </motion.a>
           <motion.button
             onClick={downloadJson}
             className="btn-ghost flex-1"
