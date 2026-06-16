@@ -94,9 +94,9 @@ class GraphomotorProfile(BaseModel):
 class EnrichedFeatures(BaseModel):
     computational_vad: ComputationalVAD = ComputationalVAD()
     spatial_phenotype: SpatialPhenotype = SpatialPhenotype()
-    canvas_utilization: CanvasUtilization = CanvasUtilization()
-    visual_complexity: VisualComplexity = VisualComplexity()
-    graphomotor_profile: GraphomotorProfile = GraphomotorProfile()
+    canvas_utilization: Optional[CanvasUtilization] = None
+    visual_complexity: Optional[VisualComplexity] = None
+    graphomotor_profile: Optional[GraphomotorProfile] = None
 
     model_config = {"populate_by_name": True}
 

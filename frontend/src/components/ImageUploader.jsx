@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CloudArrowUp, CheckCircle, WarningCircle } from '@phosphor-icons/react';
-import { uploadImage } from '../services/imageService';
+import { uploadAndAnalyze } from '../services/imageService';
 
 const STATES = {
   IDLE: 'IDLE',
@@ -27,9 +27,9 @@ export default function ImageUploader({ onSuccess }) {
     setStatus(STATES.UPLOADING);
     setErrorMsg('');
     try {
-      const analysisId = await uploadImage(file);
+      const response = await uploadAndAnalyze(file);
       setStatus(STATES.SUCCESS);
-      onSuccess(analysisId);
+      onSuccess(response.data);
     } catch (err) {
       setStatus(STATES.ERROR);
       const detail = err.response?.data?.detail;
